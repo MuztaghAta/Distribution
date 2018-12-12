@@ -18,16 +18,27 @@ import os.path
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import groupby
-from scipy.stats import exponweib  # for curve fitting using Weibull distribution
 from fitting import fit_distribution  # self defined fitting function
 
+
 # customization
-source_data_name = 'DouYinData_26wcsvcopy_size.csv'
-prob_data_name = 'probability_video_size.txt'
-fig_name = 'video_size.pdf'
+dimension = 'bitrate'  # bitrate, duration, size
+source_data_name = 'sample.csv'
+prob_data_name = 'probability_video_{}.txt'.format(dimension)
+fig_name = 'video_{}.pdf'.format(dimension)
+
 distribution2fit = 'Weibull'  # choose from Weibull, Rayleigh, lognormal or leave it empty
 
 cwd = os.getcwd()
+
+data_file = cwd + os.sep + source_data_name
+data_whole = np.genfromtxt(data_file, delimiter=',')  # for csv file
+# data_whole = np.loadtxt(data_file)  # for txt file
+
+# id_column = 0  # which column of data do you want to plot
+# data_original = data_whole[:, id_column]
+data_original = data_whole
+
 # check if the probability information has been available or not
 prob_file = cwd + os.sep + prob_data_name
 # read probability data from the file if it exists
@@ -39,14 +50,6 @@ if os.path.exists(prob_file):
     num_duplicate = prob_all[3]  # frequency of x axis ticks, similar with prob_pdf but with different scale
 # if the probability is not available yet, compute from original data and save it for future use
 else:
-    data_file = cwd + os.sep + source_data_name
-    data_whole = np.genfromtxt(data_file, delimiter=',')  # for csv file
-    # data_whole = np.loadtxt(data_file)  # for txt file
-
-    # id_column = 0  # which column of data do you want to plot
-    # data_original = data_whole[:, id_column]
-    data_original = data_whole
-
     # sort the data in an ascending order, it doesn't remove duplicates
     x_point = list(np.sort(data_original))
     # # remove the largest elements which are regarded as abnormal !!!
@@ -87,14 +90,14 @@ else:
     x_point = x_point[1:]
     prob_cdf = prob_cdf[1:]
     num_duplicate = num_duplicate[1:]
-    # save the probability results
-    prob = [x_point, prob_pdf, prob_cdf, num_duplicate]
-    np.savetxt(prob_data_name, prob)
+    # save the probability results as a list
+    prob_all = np.array([x_point, prob_pdf, prob_cdf, num_duplicate])
+    np.savetxt(prob_data_name, prob_all)
 
 
 # fit data to known distribution
 if not distribution2fit == '':
-    x_point_fit, prob_pdf_fit = fit_distribution(prob_file, distribution2fit)
+    x_point_fit, prob_pdf_fit, param = fit_distribution(prob_all, data_original, distribution2fit)
 
 
 # start to plot
@@ -112,19 +115,19 @@ if log_plot == 1:
     ax1.loglog(x_point, prob_pdf)
     ax2.loglog(x_point, prob_cdf)
 else:
-    # ax1.stackplot(x_point, prob_pdf, color='red', alpha=0.7)  # num_duplicate, prob_pdf
-    ax1.plot(x_point, prob_pdf, color='red', markersize=ms, alpha=0.4, label='PDF of original data')
+    ax1.stackplot(x_point, prob_pdf, color='red', alpha=0.4, labels=['PDF of the original data'])
+    # ax1.plot(x_point, prob_pdf, color='red', markersize=ms, alpha=0.4, label='PDF of original data')
     if  not distribution2fit == '':
         label_dis = 'Fitted {} distribution'.format(distribution2fit)
-        ax1.plot(x_point_fit, prob_pdf_fit, color='red', linewidth=lw, markersize=ms, alpha=0.7, label=label_dis)
-    ax2.plot(x_point, prob_cdf, color='C0', linewidth=lw, markersize=ms, alpha=1.0, label='CDF of original data')
+        ax1.plot(x_point_fit, prob_pdf_fit, color='red', linewidth=lw, markersize=ms, alpha=0.8, label=label_dis)
+    ax2.plot(x_point, prob_cdf, color='C0', linewidth=lw, markersize=ms, alpha=1.0, label='CDF of the original data')
     # colors: C0-C9, xkcd:azure ...
     # https://matplotlib.org/users/dflt_style_changes.html
 
 # ax1.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))  # scientific notation
 ax1.set_ylabel('PDF', color='red')  # Number of videos, PDF
 ax2.set_ylabel('CDF', color='C0')
-ax1.set_xlabel('Video size')
+ax1.set_xlabel('Video {}'.format(dimension))
 fig.legend(loc='center right', bbox_to_anchor=(0.9, 0.5), frameon=False)
 # legend location https://matplotlib.org/api/_as_gen/matplotlib.pyplot.legend.html
 
