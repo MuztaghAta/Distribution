@@ -1,15 +1,15 @@
-"""This script provides self-defined metohds to compute and plot CDF/PDF of a 
+"""This script provides self-defined methods to compute and plot CDF/PDF of a
 series of data points and to fit the data to known statistical distributions.
 
 Steps:
 1. import data from file
 2. compute CDF and PDF and save the results to file for future use
-3. fit data to known distribution (using oethods defined in fitting.py)
+3. fit data to known distribution (using methods defined in fitting.py)
 4. plot and save
 
 You need to:
 1. put the data file in the folder of this script and remove the header
-2. change names in the 'customization' section according to your need
+2. change names in the 'import data' section according to your need
 3. choose normal or log plot and plot formats in the 'plot and save' section
 """
 
@@ -17,14 +17,13 @@ import os.path
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import groupby
-from fitting import fit_distribution  # self defined fitting metohds
+from fitting import fit_distribution  # self defined fitting methods
 
 
 # step 1: import data
-# customization
+source_data_name = 'Douyin_video_size.csv'
 dimension = 'size'  # bitrate, duration, size
 unit = 'MB'  # Kpbs, seconds, MB
-source_data_name = 'DouYinData_26wcsvcopy_{}.csv'.format(dimension)
 prob_data_name = 'probability_video_{}.txt'.format(dimension)
 fig_name = 'video_{}.pdf'.format(dimension)
 distribution2fit = 'Weibull'  # Weibull, Rayleigh, lognormal or leave it empty
@@ -42,7 +41,7 @@ prob_file = cwd + os.sep + prob_data_name
 # read probability data from the file if it exists
 if os.path.exists(prob_file):
     prob_all = np.loadtxt(prob_file)  # all probability data
-    x_point = prob_all[0]  # x axis ticks (no duplicates)
+    x_point = prob_all[0]  # x axis points (no duplicates)
     prob_pdf = prob_all[1]  # point probability
     prob_cdf = prob_all[2]  # cumulative probability
     num_duplicate = prob_all[3]  # frequency of x axis ticks
@@ -54,8 +53,8 @@ else:
     # compute the cumulative probability of each unique data point
     prob_cdf = list(np.arange(1, len(x_point) + 1) / float(len(x_point)))
     # remove the first n-1 of n duplicates in x_point and prob_cdf so that one 
-    # x tick has only one probability
-    x_point_rev = x_point[::-1]  # sort the data points in descending order
+    # x point has only one probability
+    x_point_rev = x_point[::-1]  # sort the x points in descending order
     prob_cdf_rev = prob_cdf[::-1]  # sort the probability in descending order
     seen = set()
     duplicate = []
