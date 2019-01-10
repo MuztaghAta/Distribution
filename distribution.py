@@ -21,7 +21,7 @@ from fitting import fit_distribution  # self defined fitting methods
 
 
 # step 1: import data
-source_data_name = 'Douyin_video_size.csv'
+source_data_name = 'example.csv'
 dimension = 'size'  # bitrate, duration, size
 unit = 'MB'  # Kpbs, seconds, MB
 prob_data_name = 'probability_video_{}.txt'.format(dimension)
