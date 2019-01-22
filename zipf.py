@@ -66,7 +66,7 @@ else:
 if format_on == 1:
     plt.xlabel('Ranking of videos in terms of number of shares')
     plt.ylabel('PMF')
-    lbs = ['Orignal data', 'Zipf distribution $\\alpha$={}'.format(a)]
+    lbs = ['Orignal data', 'Zipf distribution ($\\alpha$={})'.format(a)]
     plt.legend(lbs, loc='upper right', bbox_to_anchor=(1, 1), frameon=False)
     plt.tight_layout()
 plt.show()
