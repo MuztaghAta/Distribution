@@ -23,9 +23,7 @@ import seaborn as sns
 
 
 # import data
-dimension = 'share'  # play, share, like, comment
-source_data_name = 'DouYinData_26wcsvcopy_{}.csv'.format(dimension)
-# source_data_name = 'example.csv'
+source_data_name = 'example_zipf.csv'
 cwd = os.getcwd()
 data_file = cwd + os.sep + source_data_name
 data_original = np.genfromtxt(data_file, delimiter=',')
